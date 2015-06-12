@@ -1,0 +1,10 @@
+<% if @deck %>
+<% @cur_round = [] %>
+  <% @deck.cards.each {|card| @cur_round << card.question } %>
+  <%= p @cur_round[session[:guesses]] %>
+<% end %>
+
+<form action="/decks/<%=@deck.id%>" method="post">
+  <input type="text" name="answer" placeholder="answer" id="answer"/>
+  <input type="submit" value="Submit"/>
+</form>
