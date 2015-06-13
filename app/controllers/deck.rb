@@ -1,19 +1,30 @@
 get '/decks' do
-  @decks = Deck.all
-  erb :'/decks/index'
+  if session[:id]
+    @decks = Deck.all
+    erb :'/decks/index'
+  else
+    "ERROR"
+  end
 end
 
 get '/decks/:id' do
-  @deck = Deck.find_by(id: params[:id])
-  session[:guesses] = 0
-  erb :'/decks/show'
-
+  p session[:id]
+  if session[:id]
+    @deck = Deck.find_by(id: params[:id])
+    session[:guesses] = 0
+    # @round = Round.create(user_id: session[:id])
+    erb :'/decks/show'
+  else
+    "ERROR"
+  end
 end
 
 post '/decks/:id' do
   @deck = Deck.find_by(id: params[:id])
+  @guess = Guess.create(round_id: 1, )
   if params[:answer] == @deck.cards[session[:guesses]].answer
-    "hayyy"
+
+    redirect '/decks/:id'
   else
     redirect '/decks'
   end

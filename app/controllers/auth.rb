@@ -1,10 +1,16 @@
 get '/login' do
-  #get login form
+  erb :'/auth/login'
 end
 
 post '/login' do
-  #authenticate user and redirect to user profile page
-  #set session[:user_id]
+  @user = User.find_by_email(params[:user][:email])
+  if @user.password == params[:user][:password]
+    session[:id] = @user.id
+    redirect '/decks'
+  else
+    "die"
+  end
+  erb :'/auth/login'
 end
 
 get '/signup' do
