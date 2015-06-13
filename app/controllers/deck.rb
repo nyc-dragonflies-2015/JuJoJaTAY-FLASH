@@ -32,12 +32,17 @@ post '/decks/:deck_id/round/:id' do
   @deck = Deck.find_by(id: params[:deck_id])
   @round = Round.find_by(id: params[:id])
   @guess = Guess.create(round_id: @round.id, card_id: @deck.cards[session[:guesses]].id)
-  if params[:answer] == @deck.cards[session[:guesses]].answer
-    @guess.update_attributes(correct: true)
+  unless session[:guesses] > @deck.cards.size
+    if params[:answer] == @deck.cards[session[:guesses]].answer
+      @guess.update_attributes(correct: true)
+    else
+      @guess.update_attributes(correct: false)
+    end
   else
-    @guess.update_attributes(correct: false)
+    redirect 'results'
   end
   session[:guesses] += 1
   redirect "decks/#{@deck.id}/round/#{@round.id}"
   erb :'/round/show'
 end
+
