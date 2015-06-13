@@ -1,16 +1,39 @@
+require 'pry'
+
 get '/login' do
-  #get login form
+  erb :'/auth/_login'
 end
 
 post '/login' do
-  #authenticate user and redirect to user profile page
-  #set session[:user_id]
+  if @user = User.find_by(email:params[:user][:email])
+    if @user.password == params[:user][:password]
+      session[:id] = @user.id
+      redirect '/decks'
+    end
+  else
+    @errors = "You fucked up"
+    erb :'/auth/_login'
+  end
 end
 
 get '/signup' do
-  #sign up form, post to users
+  erb :'/auth/_signup'
 end
 
 post '/users' do
-  #create a new user and redirect to user page
+  @user = User.new(params[:user])
+  if @user.save
+    session[:id] = @user.id
+    redirect '/decks'
+  else
+    #you fucked up
+    # @errors = []
+
+    erb :signup
+  end
+end
+
+get '/logout' do
+  session[:id] = nil
+  redirect '/login'
 end
