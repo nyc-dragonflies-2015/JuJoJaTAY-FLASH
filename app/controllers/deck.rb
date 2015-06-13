@@ -8,26 +8,36 @@ get '/decks' do
 end
 
 get '/decks/:id' do
-  p session[:id]
   if session[:id]
     @deck = Deck.find_by(id: params[:id])
+    @round = Round.create(user_id: session[:id], deck_id: @deck.id)
     session[:guesses] = 0
-    # @round = Round.create(user_id: session[:id])
     erb :'/decks/show'
   else
     "ERROR"
   end
 end
 
-post '/decks/:id' do
-  @deck = Deck.find_by(id: params[:id])
-  @guess = Guess.create(round_id: 1, )
-  if params[:answer] == @deck.cards[session[:guesses]].answer
-
-    redirect '/decks/:id'
+get '/decks/:deck_id/round/:id' do
+  if session[:id]
+    @deck = Deck.find_by(id: params[:deck_id])
+    @round = Round.find_by(id: params[:id])
+    erb :'/round/show'
   else
-    redirect '/decks'
+    "something"
+  end
+end
+
+post '/decks/:deck_id/round/:id' do
+  @deck = Deck.find_by(id: params[:deck_id])
+  @round = Round.find_by(id: params[:id])
+  # @guess = Guess.create(round_id: @round.id, card_id: @deck.cards[session[:guesses]])
+  if params[:answer] == @deck.cards[session[:guesses]].answer
+    "correct"
+  else
+    "wrong"
   end
   session[:guesses] += 1
-  erb :'/decks/show'
+  redirect "decks/#{@deck.id}/round/#{@round.id}"
+  erb :'/round/show'
 end
